@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive World Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        
+        .info-panel {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .info-panel h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .info-panel p {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .nav-links {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 Interactive World Map</h1>
+            <p>Explore major cities around the world</p>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div class="info-panel">
+            <h2>About This Map</h2>
+            <p>This interactive map showcases major cities around the world. Click on the markers to learn more about each location. You can zoom in and out, and drag to explore different regions.</p>
+        </div>
+        
+        <div class="nav-links">
+            <a href="map2.html">View Map 2: Regional Explorer →</a>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map centered on the world
+        const map = L.map('map').setView([20, 0], 2);
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Define major cities with their coordinates
+        const cities = [
+            { name: 'New York', coords: [40.7128, -74.0060], country: 'USA', info: 'The Big Apple - Financial capital of the world' },
+            { name: 'London', coords: [51.5074, -0.1278], country: 'UK', info: 'Historic city with rich cultural heritage' },
+            { name: 'Tokyo', coords: [35.6762, 139.6503], country: 'Japan', info: 'Bustling metropolis blending tradition and innovation' },
+            { name: 'Paris', coords: [48.8566, 2.3522], country: 'France', info: 'The City of Light - Known for art, fashion, and culture' },
+            { name: 'Sydney', coords: [-33.8688, 151.2093], country: 'Australia', info: 'Beautiful harbor city with iconic opera house' },
+            { name: 'Dubai', coords: [25.2048, 55.2708], country: 'UAE', info: 'Modern city with stunning architecture' },
+            { name: 'Rio de Janeiro', coords: [-22.9068, -43.1729], country: 'Brazil', info: 'Vibrant city famous for beaches and carnival' },
+            { name: 'Singapore', coords: [1.3521, 103.8198], country: 'Singapore', info: 'Global financial hub and garden city' },
+            { name: 'Cairo', coords: [30.0444, 31.2357], country: 'Egypt', info: 'Ancient city near the Pyramids of Giza' },
+            { name: 'Moscow', coords: [55.7558, 37.6173], country: 'Russia', info: 'Historic capital with the famous Red Square' }
+        ];
+        
+        // Add markers for each city
+        cities.forEach(city => {
+            const marker = L.marker(city.coords).addTo(map);
+            marker.bindPopup(`
+                <div style="font-family: Arial; min-width: 200px;">
+                    <h3 style="color: #667eea; margin-bottom: 8px;">${city.name}</h3>
+                    <p style="margin: 5px 0;"><strong>Country:</strong> ${city.country}</p>
+                    <p style="margin: 5px 0;">${city.info}</p>
+                </div>
+            `);
+        });
+        
+        // Add a custom control for instructions
+        const info = L.control({ position: 'topright' });
+        
+        info.onAdd = function() {
+            const div = L.DomUtil.create('div', 'info-control');
+            div.innerHTML = `
+                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                    <h4 style="margin: 0 0 10px 0; color: #667eea;">How to Use</h4>
+                    <p style="margin: 0; font-size: 0.9em;">🖱️ Click markers for info<br>
+                    🔍 Zoom with mouse wheel<br>
+                    👆 Drag to explore</p>
+                </div>
+            `;
+            return div;
+        };
+        
+        info.addTo(map);
+    </script>
+</body>
+</html>
