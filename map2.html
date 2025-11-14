@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Regional Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        
+        .info-panel {
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .info-panel h2 {
+            color: #f5576c;
+            margin-bottom: 15px;
+        }
+        
+        .info-panel p {
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            background: #f5576c;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+        }
+        
+        .controls button:hover {
+            background: #f093fb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .nav-links {
+            padding: 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+        }
+        
+        .nav-links a {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #f5576c;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            background: #f093fb;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗺️ Interactive Regional Map</h1>
+            <p>Explore Europe with circles and custom areas</p>
+        </div>
+        
+        <div class="controls">
+            <button onclick="showAllMarkers()">Show All Locations</button>
+            <button onclick="focusOnCapitals()">Focus on Capitals</button>
+            <button onclick="showCircles()">Toggle Radius Circles</button>
+            <button onclick="resetView()">Reset View</button>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div class="info-panel">
+            <h2>About This Map</h2>
+            <p>This interactive regional map focuses on Europe with advanced features including clickable markers, circles showing areas of influence, and custom controls. Use the buttons above to interact with different map features.</p>
+        </div>
+        
+        <div class="nav-links">
+            <a href="map1.html">← View Map 1: World Cities</a>
+            <a href="index.html">🏠 Home</a>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map centered on Europe
+        const map = L.map('map').setView([50.5, 10], 5);
+        
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+        
+        // Define European locations with their coordinates
+        const locations = [
+            { name: 'Berlin', coords: [52.5200, 13.4050], type: 'capital', country: 'Germany', population: '3.6M', radius: 100000 },
+            { name: 'Rome', coords: [41.9028, 12.4964], type: 'capital', country: 'Italy', population: '2.8M', radius: 80000 },
+            { name: 'Madrid', coords: [40.4168, -3.7038], type: 'capital', country: 'Spain', population: '3.2M', radius: 90000 },
+            { name: 'Vienna', coords: [48.2082, 16.3738], type: 'capital', country: 'Austria', population: '1.9M', radius: 70000 },
+            { name: 'Prague', coords: [50.0755, 14.4378], type: 'capital', country: 'Czech Republic', population: '1.3M', radius: 60000 },
+            { name: 'Amsterdam', coords: [52.3676, 4.9041], type: 'capital', country: 'Netherlands', population: '872K', radius: 50000 },
+            { name: 'Brussels', coords: [50.8503, 4.3517], type: 'capital', country: 'Belgium', population: '1.2M', radius: 55000 },
+            { name: 'Copenhagen', coords: [55.6761, 12.5683], type: 'capital', country: 'Denmark', population: '794K', radius: 45000 },
+            { name: 'Munich', coords: [48.1351, 11.5820], type: 'city', country: 'Germany', population: '1.5M', radius: 65000 },
+            { name: 'Barcelona', coords: [41.3851, 2.1734], type: 'city', country: 'Spain', population: '1.6M', radius: 70000 }
+        ];
+        
+        // Store markers and circles for manipulation
+        const markers = [];
+        const circles = [];
+        let circlesVisible = false;
+        
+        // Create custom icons
+        const capitalIcon = L.icon({
+            iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDI0IDM2Ij48cGF0aCBmaWxsPSIjZjU1NzZjIiBkPSJNMTIgMEMxOC42MjcgMCAyNCA1LjM3MyAyNCAxMmMwIDkuNjI3LTEyIDI0LTEyIDI0UzAgMjEuNjI3IDAgMTJDMCA1LjM3MyA1LjM3MyAwIDEyIDB6Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==',
+            iconSize: [24, 36],
+            iconAnchor: [12, 36],
+            popupAnchor: [0, -36]
+        });
+        
+        const cityIcon = L.icon({
+            iconUrl: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIzNiIgdmlld0JveD0iMCAwIDI0IDM2Ij48cGF0aCBmaWxsPSIjZjA5M2ZiIiBkPSJNMTIgMEMxOC42MjcgMCAyNCA1LjM3MyAyNCAxMmMwIDkuNjI3LTEyIDI0LTEyIDI0UzAgMjEuNjI3IDAgMTJDMCA1LjM3MyA1LjM3MyAwIDEyIDB6Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iNSIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==',
+            iconSize: [24, 36],
+            iconAnchor: [12, 36],
+            popupAnchor: [0, -36]
+        });
+        
+        // Add markers for each location
+        locations.forEach(location => {
+            const icon = location.type === 'capital' ? capitalIcon : cityIcon;
+            const marker = L.marker(location.coords, { icon: icon }).addTo(map);
+            
+            marker.bindPopup(`
+                <div style="font-family: Arial; min-width: 220px;">
+                    <h3 style="color: #f5576c; margin-bottom: 8px;">
+                        ${location.name} ${location.type === 'capital' ? '👑' : '🏙️'}
+                    </h3>
+                    <p style="margin: 5px 0;"><strong>Country:</strong> ${location.country}</p>
+                    <p style="margin: 5px 0;"><strong>Population:</strong> ${location.population}</p>
+                    <p style="margin: 5px 0;"><strong>Type:</strong> ${location.type === 'capital' ? 'Capital City' : 'Major City'}</p>
+                </div>
+            `);
+            
+            markers.push({ marker: marker, data: location });
+            
+            // Create circles (hidden initially)
+            const circle = L.circle(location.coords, {
+                color: location.type === 'capital' ? '#f5576c' : '#f093fb',
+                fillColor: location.type === 'capital' ? '#f5576c' : '#f093fb',
+                fillOpacity: 0.15,
+                radius: location.radius
+            });
+            
+            circles.push(circle);
+        });
+        
+        // Function to show all markers
+        function showAllMarkers() {
+            markers.forEach(m => {
+                m.marker.openPopup();
+                setTimeout(() => m.marker.closePopup(), 2000);
+            });
+        }
+        
+        // Function to focus on capitals
+        function focusOnCapitals() {
+            const capitalCoords = markers
+                .filter(m => m.data.type === 'capital')
+                .map(m => m.data.coords);
+            
+            if (capitalCoords.length > 0) {
+                const bounds = L.latLngBounds(capitalCoords);
+                map.fitBounds(bounds, { padding: [50, 50] });
+            }
+        }
+        
+        // Function to toggle circles
+        function showCircles() {
+            circlesVisible = !circlesVisible;
+            circles.forEach(circle => {
+                if (circlesVisible) {
+                    circle.addTo(map);
+                } else {
+                    circle.remove();
+                }
+            });
+        }
+        
+        // Function to reset view
+        function resetView() {
+            map.setView([50.5, 10], 5);
+            circles.forEach(circle => circle.remove());
+            circlesVisible = false;
+        }
+        
+        // Add a legend
+        const legend = L.control({ position: 'bottomright' });
+        
+        legend.onAdd = function() {
+            const div = L.DomUtil.create('div', 'legend');
+            div.innerHTML = `
+                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+                    <h4 style="margin: 0 0 10px 0; color: #f5576c;">Legend</h4>
+                    <div style="margin: 5px 0;">
+                        <span style="color: #f5576c; font-size: 1.2em;">●</span> Capital Cities
+                    </div>
+                    <div style="margin: 5px 0;">
+                        <span style="color: #f093fb; font-size: 1.2em;">●</span> Major Cities
+                    </div>
+                </div>
+            `;
+            return div;
+        };
+        
+        legend.addTo(map);
+    </script>
+</body>
+</html>

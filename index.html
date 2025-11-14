@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Web Maps</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 30px;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero p {
+            font-size: 1.3em;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .maps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px 30px;
+        }
+        
+        .map-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .map-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            border-color: #667eea;
+        }
+        
+        .map-card .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+        
+        .map-card h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .map-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .map-card .features {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .map-card .features h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        
+        .map-card .features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .map-card .features li {
+            padding: 5px 0;
+            color: #555;
+            font-size: 0.95em;
+        }
+        
+        .map-card .features li:before {
+            content: "✓ ";
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        .map-card a {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .map-card a:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .map-card:nth-child(2) a {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .map-card:nth-child(2) a:hover {
+            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5em;
+            }
+            
+            .hero p {
+                font-size: 1.1em;
+            }
+            
+            .maps-grid {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <h1>🌍 Interactive Web Maps</h1>
+            <p>Explore the world through two unique interactive mapping experiences</p>
+        </div>
+        
+        <div class="maps-grid">
+            <div class="map-card">
+                <div class="icon">🌍</div>
+                <h2>World Cities Map</h2>
+                <p>Discover major cities across the globe with interactive markers and detailed information about each location.</p>
+                
+                <div class="features">
+                    <h3>Features:</h3>
+                    <ul>
+                        <li>10 major cities worldwide</li>
+                        <li>Interactive pop-up information</li>
+                        <li>Zoom and pan capabilities</li>
+                        <li>Beautiful gradient design</li>
+                    </ul>
+                </div>
+                
+                <a href="map1.html">Explore World Map →</a>
+            </div>
+            
+            <div class="map-card">
+                <div class="icon">🗺️</div>
+                <h2>Regional Explorer Map</h2>
+                <p>Dive deep into European cities with advanced features including radius circles and interactive controls.</p>
+                
+                <div class="features">
+                    <h3>Features:</h3>
+                    <ul>
+                        <li>Focus on European region</li>
+                        <li>Capital and major cities</li>
+                        <li>Radius circles visualization</li>
+                        <li>Interactive control buttons</li>
+                        <li>Custom icons and legend</li>
+                    </ul>
+                </div>
+                
+                <a href="map2.html">Explore Regional Map →</a>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Interactive Web Maps</strong></p>
+            <p>Built with Leaflet.js and OpenStreetMap</p>
+        </div>
+    </div>
+</body>
+</html>
